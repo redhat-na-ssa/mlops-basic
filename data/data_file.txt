@@ -1,0 +1,51 @@
+# Data File
+
+# What is a data file? 
+A data file is any file containing information, but not code; it is only meant to be read or viewed and not executed.
+
+# Data overview
+This data contains 100,000 rows of data across 4 columns that represent a given patients heart rate, temperature, respiration rate, and white blood cell count.
+
+# How the data was generated?
+This data is not real patient data and was generated using Apple Numbers random numbers generator. It is designed to be representative of accurate thresholds for Sepsis and a population 7% of patients positive for Sepsis.
+
+## Non-Septic Values generated with these conditions
+High Temp: 42.3>Temp>38.3, 90>HR>60, 20>RR>12, 12>WBC>4
+Low Temp: 36.0>Temp>35.0, 90>HR>60, 20>RR>12, 12>WBC>4
+High HR: 38.3>Temp>36.0, 250>HR>90, 20>RR>12, 12>WBC>4
+High RR: 38.3>Temp>36.0, 90>HR>60, 35>RR>20, 12>WBC>4
+High WBC: 38.3>Temp>36.0, 90>HR>60, 20>RR>12, 30>WBC>12
+Low WBC: 38.3>Temp>36.0, 90>HR>60, 20>RR>12, 4>WBC>2.9
+Norm Temp, Norm HR, Norm RR, Norm WBC: 38.3>Temp>36.0, 90>HR>60, 20>RR>12, 12>WBC>4
+
+## Septic Value generated with these conditions
+High Temp, High HR: 42.3>Temp>38.3, 250>HR>90, 20>RR>12, 12>WBC>4
+High Temp, High RR: 42.3>Temp>38.3, 90>HR>60, 35>RR>20, 12>WBC>4
+High Temp, High WBC: 42.3>Temp>38.3, 90>HR>60, 20>RR>12, 30>WBC>12
+High Temp, Low WBC: 42.3>Temp>38.3, 90>HR>60, 20>RR>12, 4>WBC>2.9
+Low Temp, High HR: 36.0>Temp>35.0, 250>HR>90, 20>RR>12, 12>WBC>4
+Low Temp, High RR: 36.0>Temp>35.0, 90>HR>60, 35>RR>20, 12>WBC>4
+Low Temp, High WBC: 36.0>Temp>35.0, 90>HR>60, 20>RR>12, 30>WBC>12
+Low Temp, Low WBC: 36.0>Temp>35.0, 90>HR>60, 20>RR>12, 4>WBC>2.9
+High HR, High RR: 38.3>Temp>36.0, 250>HR>90, 35>RR>20, 12>WBC>4
+High HR, High WBC: 38.3>Temp>36.0, 250>HR>90, 20>RR>12, 30>WBC>12
+High RR, High WBC: 38.3>Temp>36.0, 90>HR>60, 35>RR>20, 30>WBC>12
+High HR, Low WBC: 38.3>Temp>36.0, 250>HR>90, 20>RR>12, 4>WBC>2.9
+High RR, Low WBC: 38.3>Temp>36.0, 90>HR>60, 35>RR>20, 4>WBC>2.9
+High Temp, High HR, High WBC: 42.3>Temp>38.3, 250>HR>90, 20>RR>12, 30>WBC>12
+High Temp, High HR, High RR, High WBC: 42.3>Temp>38.3, 250>HR>90, 35>RR>20, 30>WBC>12
+
+
+# Why the data was generated?
+This data was generated to demonstrate training a baseline classifier for healthcare demonstration.
+
+# What is the intended use of the data?
+Demonstration for batch loading training data for machine learning algorithms to produce baseline models. It is known that with so few features, it would be best practice that policies be written to identify patients as septic without sending the data to a model and avoid the compute cycles.
+
+# What is the vision for the data?
+Continue to generate more vital signs and laborator values to demonstrate more robust learning algorithms with more signals from multiple data sources. Also that the data would be time based.
+
+# Assumptions
+- The conditions do not have correlation as they were independently generated between known ranges of values for Sepsis.
+- Having fewer quality signals suffices for demonstrating MLOps pipelining and baseline model creation.
+- This data is not time based (yet).
