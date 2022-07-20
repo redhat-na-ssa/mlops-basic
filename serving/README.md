@@ -58,16 +58,6 @@ To check the whole file be sure to look at it within the serving directory.
 # pull the tensorflow image from docker.io
 podman pull docker.io/tensorflow/serving:latest
 
-#OPTION 1
-docker run -t --rm  -p 8501:8501 \
---mount type=bind,source="$(pwd)/models",target=/models/ tensorflow/serving \
---model_config_file=/models/models.config \
---model_config_file_poll_wait_seconds=60 \
---allow_version_labels_for_unavailable_models=true
-
-
-#OPTION 2
-
 # run the tensorflow image as a base image
 podman run -d --name serving_base tensorflow/serving:latest 
 
