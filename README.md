@@ -11,16 +11,21 @@ Uses sythentically generated patient data (Heart Rate, Temperature, Respiratory 
 ├── Makefile           <- Makefile with commands like `make data` or `make train`
 ├── README.md          <- The top-level README for developers using this project.
 ├── data
-│   ├── labelled       <- Synthentically generated labelled training examples.
-│   └── unlabelled     <- Synthentically generated unlabelled examples.
+│   ├── labelled       <- Input data synthentically generated labelled training examples.
+│   ├── unlabelled     <- Input data 0synthentically generated unlabelled examples.
+│   ├── data_file.txt  <- Input file containing information about the data.
+│   └── septic_data_generator.csv  <- Conditions used for algorithms that generated the data.
 │
-├── docs               <- A default Sphinx project; see sphinx-doc.org for details
+├── docs               <- Input directory A default Sphinx project; see sphinx-doc.org for details
 │
-├── models             <- Trained and serialized models, model predictions, or model summaries
+├── models             <- Output directory for trained and serialized models, model predictions, or model summaries
 │
-├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
+├── notebooks          <- Input directory Jupyter notebooks. Naming convention is a number (for ordering),
 │                         the creator's initials, and a short `-` delimited description, e.g.
 │                         `1.0-jqp-initial-data-exploration`.
+│
+├── pipeline           <- Output directory to store artifacts generated from the pipeline.
+│   └── metadata       <- Output directory to a SQLite DB file to use as an MLMD storage.
 │
 ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
 │
