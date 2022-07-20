@@ -1,7 +1,7 @@
 #  Procedure
 
 1. Created GitHub project
-2. Applied a modified [Cookie Cutter Data Science Project](https://drivendata.github.io/cookiecutter-data-science/)
+2. Applied [Cookie Cutter Data Science Project](https://drivendata.github.io/cookiecutter-data-science/)
 3. Accessed OpenShift 4.10 cluster on AWS
 4. Installed  Open Data Hub Operator v1.2 (see kfdef.yaml)
 5. Created OpenShift project "MLOps Basic"
