@@ -111,6 +111,11 @@ def run_fn(fn_args: tfx.components.FnArgs):
       validation_data=eval_dataset,
       validation_steps=fn_args.eval_steps)
 
+  # save a model's architecture, weights, and training configuration in a single file/folder
+  # This allows you to export a model so it can be used without access to the original Python code*. Since the optimizer-state is recovered, you can resume training from exactly where you left off.
   # The result of the training should be saved in `fn_args.serving_model_dir`
   # directory.
-  model.save(fn_args.serving_model_dir, save_format='tf')
+  model.save(
+      # output the trained model to a the desired location given by FnArgs
+      fn_args.serving_model_dir, 
+      save_format='tf')
