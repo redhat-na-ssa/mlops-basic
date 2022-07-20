@@ -9,6 +9,6 @@
 7. Cloned GitHub project into Jupyter Environment
 8. Configured GitHub credentials via `git config --global user.name` and `git config --global user.email`
 9. Generated labelled and unlabelled data using algorithms from data/data_file.txt and data/septic_data_generator.csv 
-10. Developed training pipeline using Jupyter Notebook in notebooks/train_pipeline_notebook.ipynb
+10. Developed training and pipeline code using Jupyter Notebook in notebooks/train_pipeline_notebook.ipynb
 11. 
 

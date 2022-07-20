@@ -1,5 +1,7 @@
 # Basic MLOps using Tensorflow Extended on OpenShift
 
+In this notebook-based tutorial, we will create and run a TFX pipeline to train a model to predict septic patients based on biological markers. The pipeline will consist of three essential TFX components: ExampleGen, Trainer and Pusher. The pipeline includes the most minimal ML workflow like importing data, training a model and exporting the trained TFRS ranking model.
+
 ## Goal
 Demonstrate a basic Tensorflow Pipeline that automatically executes tasks from ingestion to serving. 
 
