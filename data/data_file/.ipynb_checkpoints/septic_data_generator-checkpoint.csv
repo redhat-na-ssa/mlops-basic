@@ -1,0 +1,26 @@
+"Background: This data was generated as accurately as possible using a random number generator for each column Temperature (Temp), Heart Rate (HR), Respirator Rate (RR), White Blood Cell Count (WBC) within known ranges that typically indicate Not-Septic (0) or Septic (1). The data is representative of a population of 100,000 patients with 93% Not-Septic and 7% Septic markers. 
+
+Intended Usage: To demonstrate Machine Learning Classifiers on labelled data to create highly accurate predictions on simple signals. Not for actual prediction of sepsis in real patients. ",,,,,,,,,,,,
+septic_markers,Temp,HR,RR,WBC,isSeptic,<< Sample Data Generated,Thresholds >>,Temp,HR,RR,WBC,Definition
+High Temp,39.4,83,16,6.23,0,,,42.3>Temp>38.3,90>HR>60,20>RR>12,12>WBC>4,"High Temp: 42.3>Temp>38.3, 90>HR>60, 20>RR>12, 12>WBC>4"
+Low Temp,35.3,79,19,6.79,0,,,36.0>Temp>35.0,90>HR>60,20>RR>12,12>WBC>4,"Low Temp: 36.0>Temp>35.0, 90>HR>60, 20>RR>12, 12>WBC>4"
+High HR,37.7,216,14,7.55,0,,,38.3>Temp>36.0,250>HR>90,20>RR>12,12>WBC>4,"High HR: 38.3>Temp>36.0, 250>HR>90, 20>RR>12, 12>WBC>4"
+High RR,36.2,80,24,6.88,0,,,38.3>Temp>36.0,90>HR>60,35>RR>20,12>WBC>4,"High RR: 38.3>Temp>36.0, 90>HR>60, 35>RR>20, 12>WBC>4"
+High WBC,36.8,71,19,18.33,0,,,38.3>Temp>36.0,90>HR>60,20>RR>12,30>WBC>12,"High WBC: 38.3>Temp>36.0, 90>HR>60, 20>RR>12, 30>WBC>12"
+Low WBC,37.3,77,18,3.42,0,,,38.3>Temp>36.0,90>HR>60,20>RR>12,4>WBC>2.9,"Low WBC: 38.3>Temp>36.0, 90>HR>60, 20>RR>12, 4>WBC>2.9"
+"High Temp, High HR",40.7,242,12,5.76,1,,,42.3>Temp>38.3,250>HR>90,20>RR>12,12>WBC>4,"High Temp, High HR: 42.3>Temp>38.3, 250>HR>90, 20>RR>12, 12>WBC>4"
+"High Temp, High RR",42.1,61,33,9.53,1,,,42.3>Temp>38.3,90>HR>60,35>RR>20,12>WBC>4,"High Temp, High RR: 42.3>Temp>38.3, 90>HR>60, 35>RR>20, 12>WBC>4"
+"High Temp, High WBC",41.3,77,16,24.11,1,,,42.3>Temp>38.3,90>HR>60,20>RR>12,30>WBC>12,"High Temp, High WBC: 42.3>Temp>38.3, 90>HR>60, 20>RR>12, 30>WBC>12"
+"High Temp, Low WBC",41.7,88,14,3.75,1,,,42.3>Temp>38.3,90>HR>60,20>RR>12,4>WBC>2.9,"High Temp, Low WBC: 42.3>Temp>38.3, 90>HR>60, 20>RR>12, 4>WBC>2.9"
+"Low Temp, High HR",35.4,183,17,10.50,1,,,36.0>Temp>35.0,250>HR>90,20>RR>12,12>WBC>4,"Low Temp, High HR: 36.0>Temp>35.0, 250>HR>90, 20>RR>12, 12>WBC>4"
+"Low Temp, High RR",35.1,75,28,11.51,1,,,36.0>Temp>35.0,90>HR>60,35>RR>20,12>WBC>4,"Low Temp, High RR: 36.0>Temp>35.0, 90>HR>60, 35>RR>20, 12>WBC>4"
+"Low Temp, High WBC",35.3,84,17,19.80,1,,,36.0>Temp>35.0,90>HR>60,20>RR>12,30>WBC>12,"Low Temp, High WBC: 36.0>Temp>35.0, 90>HR>60, 20>RR>12, 30>WBC>12"
+"Low Temp, Low WBC",35.1,89,12,3.02,1,,,36.0>Temp>35.0,90>HR>60,20>RR>12,4>WBC>2.9,"Low Temp, Low WBC: 36.0>Temp>35.0, 90>HR>60, 20>RR>12, 4>WBC>2.9"
+"High HR, High RR",38.1,206,23,5.53,1,,,38.3>Temp>36.0,250>HR>90,35>RR>20,12>WBC>4,"High HR, High RR: 38.3>Temp>36.0, 250>HR>90, 35>RR>20, 12>WBC>4"
+"High HR, High WBC",36.9,146,19,19.02,1,,,38.3>Temp>36.0,250>HR>90,20>RR>12,30>WBC>12,"High HR, High WBC: 38.3>Temp>36.0, 250>HR>90, 20>RR>12, 30>WBC>12"
+"High RR, High WBC",36.1,62,22,24.57,1,,,38.3>Temp>36.0,90>HR>60,35>RR>20,30>WBC>12,"High RR, High WBC: 38.3>Temp>36.0, 90>HR>60, 35>RR>20, 30>WBC>12"
+"High HR, Low WBC",36.6,102,14,3.38,1,,,38.3>Temp>36.0,250>HR>90,20>RR>12,4>WBC>2.9,"High HR, Low WBC: 38.3>Temp>36.0, 250>HR>90, 20>RR>12, 4>WBC>2.9"
+"High RR, Low WBC",37.1,83,25,3.31,1,,,38.3>Temp>36.0,90>HR>60,35>RR>20,4>WBC>2.9,"High RR, Low WBC: 38.3>Temp>36.0, 90>HR>60, 35>RR>20, 4>WBC>2.9"
+"High Temp, High HR, High WBC",39.9,91,19,14.43,1,,,42.3>Temp>38.3,250>HR>90,20>RR>12,30>WBC>12,"High Temp, High HR, High WBC: 42.3>Temp>38.3, 250>HR>90, 20>RR>12, 30>WBC>12"
+"High Temp, High HR, High RR, High WBC",38.9,132,26,12.73,1,,,42.3>Temp>38.3,250>HR>90,35>RR>20,30>WBC>12,"High Temp, High HR, High RR, High WBC: 42.3>Temp>38.3, 250>HR>90, 35>RR>20, 30>WBC>12"
+"Norm Temp, Norm HR, Norm RR, Norm WBC",37.2,76,17,6.39,0,,,38.3>Temp>36.0,90>HR>60,20>RR>12,12>WBC>4,"Norm Temp, Norm HR, Norm RR, Norm WBC: 38.3>Temp>36.0, 90>HR>60, 20>RR>12, 12>WBC>4"
