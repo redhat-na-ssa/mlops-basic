@@ -1,4 +1,4 @@
-HR,Temp,Resp,WBC,isSeptic
+Temp,HR,Resp,WBC,isSeptic
 40.0,110.0,12.0,4.54,0
 41.5,79.0,26.0,4.23,0
 41.9,61.0,14.0,18.13,0
