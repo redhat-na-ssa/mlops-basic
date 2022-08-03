@@ -1,45 +1,42 @@
 
-from typing import List
+from typing import Dict, List, Text
+
+import os
+import glob
 from absl import logging
+
+import datetime
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow_transform.tf_metadata import schema_utils
+import tensorflow_transform as tft
 
 from tfx import v1 as tfx
 from tfx_bsl.public import tfxio
-from tensorflow_metadata.proto.v0 import schema_pb2
+from tensorflow_transform import TFTransformOutput
 
-_FEATURE_KEYS = [
-    'HR', 'Temp', 'Resp', 'WBC'
-]
+# Imported files such as vitals_constants are normally cached, so changes are
+# not honored after the first import.  Normally this is good for efficiency, but
+# during development when we may be iterating code it can be a problem. To
+# avoid this problem during development, reload the file.
+import vitals_constants
+import sys
+import importlib
+importlib.reload(vitals_constants)
 
-_LABEL_KEY = 'isSeptic'
+_LABEL_KEY = vitals_constants.LABEL_KEY
 
-_TRAIN_BATCH_SIZE = 20
-_EVAL_BATCH_SIZE = 10
-
-# Since we're not generating or creating a schema, we will instead create
-# a feature spec.  Since there are a fairly small number of features this is
-# manageable for this dataset.
-_FEATURE_SPEC = {
-    **{
-        feature: tf.io.FixedLenFeature(shape=[1], dtype=tf.float32)
-           for feature in _FEATURE_KEYS
-       },
-    _LABEL_KEY: tf.io.FixedLenFeature(shape=[1], dtype=tf.int64)
-}
+_BATCH_SIZE = 40
 
 
-def _input_fn(file_pattern: List[str],
+def _input_fn(file_pattern: List[Text],
               data_accessor: tfx.components.DataAccessor,
-              schema: schema_pb2.Schema,
+              tf_transform_output: tft.TFTransformOutput,
               batch_size: int = 200) -> tf.data.Dataset:
-  """Generates features and label for training.
+  """Generates features and label for tuning/training.
 
   Args:
     file_pattern: List of paths or patterns of input tfrecord files.
     data_accessor: DataAccessor for converting input to RecordBatch.
-    schema: schema of the input data.
+    tf_transform_output: A TFTransformOutput.
     batch_size: representing the number of consecutive elements of returned
       dataset to combine in a single batch
 
@@ -51,31 +48,110 @@ def _input_fn(file_pattern: List[str],
       file_pattern,
       tfxio.TensorFlowDatasetOptions(
           batch_size=batch_size, label_key=_LABEL_KEY),
-      schema=schema).repeat()
+      tf_transform_output.transformed_metadata.schema)
+
+def _get_tf_examples_serving_signature(model, tf_transform_output):
+  """Returns a serving signature that accepts `tensorflow.Example`."""
+
+  # We need to track the layers in the model in order to save it.
+  # TODO(b/162357359): Revise once the bug is resolved.
+  model.tft_layer_inference = tf_transform_output.transform_features_layer()
+
+  @tf.function(input_signature=[
+      tf.TensorSpec(shape=[None], dtype=tf.string, name='examples')
+  ])
+  def serve_tf_examples_fn(serialized_tf_example):
+    """Returns the output to be used in the serving signature."""
+    raw_feature_spec = tf_transform_output.raw_feature_spec()
+    # Remove label feature since these will not be present at serving time.
+    raw_feature_spec.pop(_LABEL_KEY)
+    raw_features = tf.io.parse_example(serialized_tf_example, raw_feature_spec)
+    transformed_features = model.tft_layer_inference(raw_features)
+    logging.info('serve_transformed_features = %s', transformed_features)
+
+    outputs = model(transformed_features)
+    # TODO(b/154085620): Convert the predicted labels from the model using a
+    # reverse-lookup (opposite of transform.py).
+    return {'outputs': outputs}
+
+  return serve_tf_examples_fn
 
 
-def _build_keras_model() -> tf.keras.Model:
-  """Creates a DNN Keras model for classifying patient data.
+def _get_transform_features_signature(model, tf_transform_output):
+  """Returns a serving signature that applies tf.Transform to features."""
+
+  # We need to track the layers in the model in order to save it.
+  # TODO(b/162357359): Revise once the bug is resolved.
+  model.tft_layer_eval = tf_transform_output.transform_features_layer()
+
+  @tf.function(input_signature=[
+      tf.TensorSpec(shape=[None], dtype=tf.string, name='examples')
+  ])
+  def transform_features_fn(serialized_tf_example):
+    """Returns the transformed_features to be fed as input to evaluator."""
+    raw_feature_spec = tf_transform_output.raw_feature_spec()
+    raw_features = tf.io.parse_example(serialized_tf_example, raw_feature_spec)
+    transformed_features = model.tft_layer_eval(raw_features)
+    logging.info('eval_transformed_features = %s', transformed_features)
+    return transformed_features
+
+  return transform_features_fn
+
+
+def export_serving_model(tf_transform_output, model, output_dir):
+  """Exports a keras model for serving.
+  Args:
+    tf_transform_output: Wrapper around output of tf.Transform.
+    model: A keras model to export for serving.
+    output_dir: A directory where the model will be exported to.
+  """
+  # The layer has to be saved to the model for keras tracking purpases.
+  model.tft_layer = tf_transform_output.transform_features_layer()
+
+  signatures = {
+      'serving_default':
+          _get_tf_examples_serving_signature(model, tf_transform_output),
+      'transform_features':
+          _get_transform_features_signature(model, tf_transform_output),
+  }
+
+  model.save(output_dir, save_format='tf', signatures=signatures)
+
+
+# TODO UPDATE WITH. RFC MODEL CODE TO REPLACE KERAS DNN CODE BELOW
+def _build_keras_model(tf_transform_output: TFTransformOutput
+                       ) -> tf.keras.Model:
+  """Creates a DNN Keras model for classifying vitals data.
+
+  Args:
+    tf_transform_output: [TFTransformOutput], the outputs from Transform
 
   Returns:
-    A Keras Model.
+    A keras Model.
   """
-  # The model below is built with Functional API, please refer to
-  # https://www.tensorflow.org/guide/keras/overview for all API options.
-  inputs = [keras.layers.Input(shape=(1,), name=f) for f in _FEATURE_KEYS]
-  d = keras.layers.concatenate(inputs)
-  for _ in range(2):
-    d = keras.layers.Dense(8, activation='relu')(d)
-  outputs = keras.layers.Dense(3)(d)
+  feature_spec = tf_transform_output.transformed_feature_spec().copy()
+  feature_spec.pop(_LABEL_KEY)
 
-  model = keras.Model(inputs=inputs, outputs=outputs)
-  model.compile(
-      optimizer=keras.optimizers.Adam(1e-2),
-      loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-      metrics=[keras.metrics.SparseCategoricalAccuracy()])
-
-  model.summary(print_fn=logging.info)
-  return model
+  inputs = {}
+  for key, spec in feature_spec.items():
+    if isinstance(spec, tf.io.VarLenFeature):
+      inputs[key] = tf.keras.layers.Input(
+          shape=[None], name=key, dtype=spec.dtype, sparse=True)
+    elif isinstance(spec, tf.io.FixedLenFeature):
+      # TODO(b/208879020): Move into schema such that spec.shape is [1] and not
+      # [] for scalars.
+      inputs[key] = tf.keras.layers.Input(
+          shape=spec.shape or [1], name=key, dtype=spec.dtype)
+    else:
+      raise ValueError('Spec type is not supported: ', key, spec)
+  
+  output = tf.keras.layers.Concatenate()(tf.nest.flatten(inputs))
+  output = tf.keras.layers.Dense(100, activation='relu')(output)
+  output = tf.keras.layers.Dense(70, activation='relu')(output)
+  output = tf.keras.layers.Dense(50, activation='relu')(output)
+  output = tf.keras.layers.Dense(20, activation='relu')(output)
+  output = tf.keras.layers.Dense(1)(output)
+  return tf.keras.Model(inputs=inputs, outputs=output)
 
 
 # TFX Trainer will call this function.
@@ -85,37 +161,29 @@ def run_fn(fn_args: tfx.components.FnArgs):
   Args:
     fn_args: Holds args used to train the model as name/value pairs.
   """
+  tf_transform_output = tft.TFTransformOutput(fn_args.transform_output)
 
-  # This schema is usually either an output of SchemaGen or a manually-curated
-  # version provided by pipeline author. A schema can also derived from TFT
-  # graph if a Transform component is used. In the case when either is missing,
-  # `schema_from_feature_spec` could be used to generate schema from very simple
-  # feature_spec, but the schema returned would be very primitive.
-  schema = schema_utils.schema_from_feature_spec(_FEATURE_SPEC)
+  train_dataset = _input_fn(fn_args.train_files, fn_args.data_accessor, 
+                            tf_transform_output, _BATCH_SIZE)
+  eval_dataset = _input_fn(fn_args.eval_files, fn_args.data_accessor, 
+                           tf_transform_output, _BATCH_SIZE)
 
-  train_dataset = _input_fn(
-      fn_args.train_files,
-      fn_args.data_accessor,
-      schema,
-      batch_size=_TRAIN_BATCH_SIZE)
-  eval_dataset = _input_fn(
-      fn_args.eval_files,
-      fn_args.data_accessor,
-      schema,
-      batch_size=_EVAL_BATCH_SIZE)
+  model = _build_keras_model(tf_transform_output)
 
-  model = _build_keras_model()
+  model.compile(
+      loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+      optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+      metrics=[tf.keras.metrics.BinaryAccuracy()])
+
+  tensorboard_callback = tf.keras.callbacks.TensorBoard(
+      log_dir=fn_args.model_run_dir, update_freq='batch')
+
   model.fit(
       train_dataset,
       steps_per_epoch=fn_args.train_steps,
       validation_data=eval_dataset,
-      validation_steps=fn_args.eval_steps)
+      validation_steps=fn_args.eval_steps,
+      callbacks=[tensorboard_callback])
 
-  # save a model's architecture, weights, and training configuration in a single file/folder
-  # This allows you to export a model so it can be used without access to the original Python code*. Since the optimizer-state is recovered, you can resume training from exactly where you left off.
-  # The result of the training should be saved in `fn_args.serving_model_dir`
-  # directory.
-  model.save(
-      # output the trained model to a the desired location given by FnArgs
-      fn_args.serving_model_dir, 
-      save_format='tf')
+  # Export the model.
+  export_serving_model(tf_transform_output, model, fn_args.serving_model_dir)

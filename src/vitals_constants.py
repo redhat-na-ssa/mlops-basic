@@ -1,5 +1,5 @@
 
-NUMERICAL_FEATURES = ['HR', 'Temp', 'Resp', 'WBC']
+NUMERICAL_FEATURES = ['Temp', 'HR', 'Resp', 'WBC']
 
 # Keys
 LABEL_KEY = 'isSeptic'
