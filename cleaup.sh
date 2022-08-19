@@ -3,10 +3,13 @@
 # recommended to run between notebook cell runs as artficat id mismatch will cause errors
 
 printf "${GREEN}Delete models\n\n"
-rm -rf models/sepsis
+rm -rf models/*
+
+printf "${GREEN}Delete transformed data\n\n"
+rm -rf data/transformed_data/*
 
 printf "${GREEN}Delete pipeline artifacts\n\n"
-rm -rf pipeline/*
+rm -rf pipelines/*
 
 printf "${GREEN}Delete ML source code\n\n"
 rm src/*
