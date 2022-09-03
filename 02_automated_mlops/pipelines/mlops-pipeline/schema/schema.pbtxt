@@ -1,0 +1,70 @@
+feature {
+  name: "HR"
+  type: FLOAT
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Resp"
+  type: FLOAT
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Temp"
+  type: FLOAT
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "WBC"
+  type: FLOAT
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "isSeptic"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  not_in_environment: "SERVING"
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+default_environment: "TRAINING"
+default_environment: "SERVING"
