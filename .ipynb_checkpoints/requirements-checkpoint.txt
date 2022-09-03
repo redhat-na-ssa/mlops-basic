@@ -5,3 +5,4 @@ sklearn
 tensorflow_decision_forests
 wurlitzer
 matplotlib
+Jinja2==3.0.3
