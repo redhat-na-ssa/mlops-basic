@@ -1,0 +1,50 @@
+{
+  "evalConfig": {
+    "modelSpecs": [
+      {
+        "signatureName": "serving_default",
+        "labelKey": "isSeptic",
+        "preprocessingFunctionNames": [
+          "tft_layer"
+        ]
+      }
+    ],
+    "slicingSpecs": [
+      {},
+      {
+        "featureKeys": [
+          "Temp"
+        ]
+      }
+    ],
+    "metricsSpecs": [
+      {
+        "modelNames": [
+          ""
+        ],
+        "perSliceThresholds": {
+          "binary_accuracy": {
+            "thresholds": [
+              {
+                "slicingSpecs": [
+                  {}
+                ],
+                "threshold": {
+                  "valueThreshold": {
+                    "lowerBound": 0.7
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "version": "0.40.0",
+  "dataLocation": "<user provided PCollection>",
+  "fileFormat": "<unknown>",
+  "modelLocations": {
+    "": "pipelines/mlops-pipeline/Trainer/model/7/Format-Serving"
+  }
+}
