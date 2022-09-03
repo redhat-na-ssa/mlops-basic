@@ -10,12 +10,12 @@ Uses sythentically generated patient data (Heart Rate, Temperature, Respiratory 
 
 ```
 ├── 01_manual_ml
-│   ├── basic_notebook_tfdf.ipynb
+│   ├── basic_notebook_tfdf.ipynb             for manual ML development, run this notebook
 │   └── models
 ├── 02_automated_mlops
 │   ├── clean.sh
 │   ├── constants.py
-│   ├── mlops_notebook_tfx_tfdf.ipynb
+│   ├── mlops_notebook_tfx_tfdf.ipynb         for automating ML development, run this notebook
 │   ├── models
 │   ├── pipelines
 │   ├── saved_data
@@ -30,5 +30,5 @@ Uses sythentically generated patient data (Heart Rate, Temperature, Respiratory 
 │   ├── README.md
 │   └── tensorboard_logs
 ├── README.md
-└── requirements.txt                          always run ''
+└── requirements.txt                          always run 'pip install -r requirements.txt on first launch'
 ```
